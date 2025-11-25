@@ -130,36 +130,43 @@
 
     <!-- Contact -->
     <section id="contact">
-      <h2>Contact / Join Us</h2>
-      <div class="underline"></div>
-      <div class="contact-wrap">
-        <form class="contact" id="contactForm" action="api/submit.php" method="POST" enctype="multipart/form-data">
-          <label for="name">Full Name</label>
-          <input id="name" name="name" required>
+  <h2>Contact / Join Us</h2>
+  <div class="underline"></div>
+  <div class="contact-wrap">
+    <form class="contact" 
+          id="contactForm" 
+          action="https://sagar13.my-style.in/api/submit.php" 
+          method="POST"
+          enctype="multipart/form-data">
 
-          <label for="email">Email Address</label>
-          <input id="email" name="email" type="email" required>
+      <label for="name">Full Name</label>
+      <input id="name" name="name" required>
 
-          <label for="phone">Phone</label>
-          <input id="phone" name="phone" type="tel">
+      <label for="email">Email Address</label>
+      <input id="email" name="email" type="email" required>
 
-          <label for="interest">I'm interested in</label>
-          <select id="interest" name="interest">
-            <option>Adoption</option>
-            <option>Volunteering</option>
-            <option>Donation</option>
-          </select>
+      <label for="phone">Phone</label>
+      <input id="phone" name="phone" type="tel">
 
-          <label for="message">Message</label>
-          <textarea id="message" name="message" rows="4" placeholder="Tell us how you'd like to help..."></textarea>
+      <label for="interest">I'm interested in</label>
+      <select id="interest" name="interest">
+        <option>Adoption</option>
+        <option>Volunteering</option>
+        <option>Donation</option>
+      </select>
 
-          <div class="submit-row">
-            <button class="btn primary" type="submit">Send Message</button>
-          </div>
-          <div class="note">We will never share your info. Thank you for helping animals.</div>
-        </form>
+      <label for="message">Message</label>
+      <textarea id="message" name="message" rows="4" placeholder="Tell us how you'd like to help..."></textarea>
+
+      <div class="submit-row">
+        <button class="btn primary" type="submit">Send Message</button>
       </div>
-    </section>
+
+      <div class="note">We will never share your info. Thank you for helping animals.</div>
+    </form>
+  </div>
+</section>
+
   </main>
 
   <footer>© PawKind — Built with ❤️ for animals</footer>
