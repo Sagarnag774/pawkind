@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta name="google-site-verification" content="z9wmzgI-tMJpVbDrT5EDNoH6lwVPUCiQabUVGrNh_N0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PawKind — Adopt, Love, and Care</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f7efe6;
+      --mint:#cfeee6;
+      --warm:#ffb07c;
+      --accent:#ffd6d3;
+      --card:#ffffff;
+      --muted:#6b6b6b;
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:#222;overflow-x:hidden}
+    header{background:linear-gradient(90deg,#d8f8ef,#ffe7de);padding:18px 6%;display:flex;align-items:center;gap:20px;box-shadow:0 6px 24px rgba(0,0,0,.04)}
+    .brand{display:flex;gap:12px;align-items:center;font-weight:800;font-size:20px}
+    .brand .paw{width:36px;height:36px;background:linear-gradient(180deg,var(--warm),#ff8f6b);border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-size:18px}
+    nav{margin-left:auto;display:flex;gap:24px;align-items:center}
+    nav a{color:#555;text-decoration:none;font-weight:600}
+    .hero{padding:40px 6%;display:flex;align-items:center;justify-content:center;flex-direction:column}
+    .hero-inner{max-width:1200px;width:100%;padding:60px;background:url('https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?q=80&w=1600&auto=format&fit=crop') center/cover;border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,.06);text-align:center;color:#fff;position:relative}
+    .hero-inner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,.18), rgba(255,255,255,.06));border-radius:12px}
+    .hero h1{position:relative;font-size:48px;margin:0;z-index:1}
+    .lead{position:relative;z-index:1;color:rgba(255,255,255,.92);max-width:900px;margin:16px auto 24px}
+    .cta{position:relative;z-index:1}
+    .btn{padding:14px 28px;border-radius:999px;border:none;font-weight:800;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.08)}
+    .btn.primary{background:linear-gradient(90deg,var(--warm),#ff8f6b);color:white}
+    .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:28px;padding:70px 6%}
+    .card{background:var(--card);border-radius:16px;padding:0;box-shadow:0 12px 30px rgba(0,0,0,.06);overflow:hidden}
+    .card img{width:100%;height:200px;object-fit:cover;display:block}
+    .card-body{padding:18px}
+    .card-body h3{margin:0 0 6px}
+    .card-body p{color:var(--muted);line-height:1.6}
+    section h2{font-size:36px;text-align:center;margin:20px 0 6px}
+    .underline{width:60px;height:6px;background:var(--warm);border-radius:10px;margin:8px auto 28px;opacity:.9}
+
+    /* Care Tips carousel */
+    .carousel-wrap{padding:40px 6%;display:flex;justify-content:center}
+    .carousel{max-width:900px;width:100%;padding:20px;background:var(--card);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.04)}
+    .tip{font-size:18px;color:var(--muted);padding:8px 16px;text-align:center}
+
+    /* Contact */
+    .contact-wrap{padding:40px 6%;display:flex;justify-content:center}
+    form.contact{width:520px;background:var(--card);padding:26px;border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,.06)}
+    form label{display:block;margin-top:12px;font-weight:700;color:#444}
+    form input, form textarea, form select{width:100%;padding:12px;border-radius:8px;border:1px solid #eee;margin-top:8px;font-size:15px}
+    .submit-row{display:flex;justify-content:center;margin-top:18px}
+    .note{color:var(--muted);font-size:13px;text-align:center;margin-top:12px}
+
+    footer{padding:30px 6%;text-align:center;color:var(--muted)}
+
+    /* Floating bottle (PawBot trigger) */
+    .bottle{position:fixed;right:22px;bottom:22px;width:72px;height:72px;border-radius:18px;background:linear-gradient(180deg,var(--mint),#c1f3e8);box-shadow:0 16px 40px rgba(0,0,0,.14);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:999;transition:transform .15s ease}
+    .bottle:hover{transform:translateY(-6px) rotate(-6deg)}
+    .bottle .bottle-icon{font-size:28px}
+    /* PawBot modal */
+    .pawbot{position:fixed;right:22px;bottom:110px;width:360px;background:linear-gradient(180deg,#fff,#fff8f7);border-radius:14px;box-shadow:0 30px 70px rgba(0,0,0,.24);overflow:hidden;display:none;flex-direction:column;z-index:1000}
+    .pawbot .header{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #f1eaea}
+    .pawbot .header .avatar{width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,var(--warm),#ff8f6b);display:flex;align-items:center;justify-content:center;color:white;font-size:20px}
+    .pawbot .messages{height:260px;overflow:auto;padding:12px;background:linear-gradient(180deg,#fff,#fffbfb)}
+    .msg{margin-bottom:10px}
+    .msg.me{text-align:right}
+    .msg .bubble{display:inline-block;padding:8px 12px;border-radius:12px;background:#f3f3f3;max-width:82%}
+    .msg.bot .bubble{background:linear-gradient(90deg,#fff7f3,#fff)}
+    .pawbot .input{display:flex;padding:10px;border-top:1px solid #faf0ee;gap:8px}
+    .pawbot input{flex:1;padding:10px;border-radius:10px;border:1px solid #eee}
+
+    /* Particles */
+    canvas.particles{position:fixed;left:0;top:0;pointer-events:none;z-index:0}
+
+    @media(max-width:800px){
+      .hero h1{font-size:30px}
+      .card-grid{gap:20px}
+      .pawbot{right:12px;left:12px;width:auto}
+      .bottle{right:12px;bottom:12px}
+      form.contact{width:92%}
+    }
+  </style>
+</head>
+<body>
+  <canvas class="particles" id="particles"></canvas>
+
+  <header>
+    <div class="brand"><div class="paw">🐾</div><div style="margin-left:6px">PawKind</div></div>
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#adoption">Adoption</a>
+      <a href="#care">Care Tips</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero" id="home">
+    <div class="hero-inner" role="img" aria-label="happy dogs">
+      <h1>Adopt, Love, and Care</h1>
+      <p class="lead">At PawKind we believe every animal deserves a loving home — find adoptable friends, learn to care for them, or join our volunteers.</p>
+      <div class="cta"><button class="btn primary" onclick="document.querySelector('#adoption').scrollIntoView({behavior:'smooth'})">Find Your New Best Friend</button></div>
+    </div>
+  </section>
+
+  <main>
+    <!-- Adoption -->
+    <section id="adoption">
+      <h2>Adoption Center</h2>
+      <div class="underline"></div>
+      <div class="card-grid" id="adoption-grid">
+        <!-- JS will populate -->
+      </div>
+    </section>
+
+    <!-- Care Tips -->
+    <section id="care">
+      <h2>Care Tips</h2>
+      <div class="underline"></div>
+      <div class="carousel-wrap">
+        <div class="carousel" id="carousel">
+          <div class="tip" id="tip-text">Loading tips…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact">
+      <h2>Contact / Join Us</h2>
+      <div class="underline"></div>
+      <div class="contact-wrap">
+        <form class="contact" id="contactForm" action="api/submit.php" method="POST" enctype="multipart/form-data">
+          <label for="name">Full Name</label>
+          <input id="name" name="name" required>
+
+          <label for="email">Email Address</label>
+          <input id="email" name="email" type="email" required>
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel">
+
+          <label for="interest">I'm interested in</label>
+          <select id="interest" name="interest">
+            <option>Adoption</option>
+            <option>Volunteering</option>
+            <option>Donation</option>
+          </select>
+
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="4" placeholder="Tell us how you'd like to help..."></textarea>
+
+          <div class="submit-row">
+            <button class="btn primary" type="submit">Send Message</button>
+          </div>
+          <div class="note">We will never share your info. Thank you for helping animals.</div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>© PawKind — Built with ❤️ for animals</footer>
+
+  <!-- Floating bottle (PawBot trigger) -->
+  <div class="bottle" id="bottle" title="A mysterious bottle with paw prints...">
+    <div class="bottle-icon">🐶</div>
+  </div>
+
+  <!-- PawBot modal (hidden) -->
+  <div class="pawbot" id="pawbot">
+    <div class="header">
+      <div class="avatar">🤖</div>
+      <div>
+        <div style="font-weight:800">PawBot</div>
+        <div style="font-size:12px;color:var(--muted)">Your pet care buddy</div>
+      </div>
+      <div style="margin-left:auto"><button class="btn" id="closeBot" style="padding:8px 10px;border-radius:10px;background:#eee">✖</button></div>
+    </div>
+    <div class="messages" id="messages" aria-live="polite" style="padding:12px;height:260px;overflow:auto"></div>
+    <div class="input">
+      <input id="botInput" placeholder="Ask about food, care, adoption..." />
+      <button class="btn" id="botSend">Send</button>
+    </div>
+  </div>
+
+  <!-- jQuery (optional small usage) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script>
+    /* ====== Data (replace with backend fetch if desired) ====== */
+    const pets = [
+      {id:1,name:'Buddy',age:'2 years',bio:"Buddy is a friendly Golden Retriever who loves fetch and cuddles.",img:'https://images.unsplash.com/photo-1507149833265-60c372daea22?q=80&w=1200&auto=format&fit=crop'},
+      {id:2,name:'Luna',age:'3 years',bio:"Luna is a gentle tabby cat who enjoys sunny spots and quiet evenings.",img:'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?q=80&w=1200&auto=format&fit=crop'},
+      {id:3,name:'Max',age:'1 year',bio:"Max is an energetic Beagle who loves adventures and playtime.",img:'https://images.unsplash.com/photo-1558944351-d2e7fa8a1d39?q=80&w=1200&auto=format&fit=crop'}
+    ];
+
+    const careTips = [
+      "Always provide fresh water and regular vet checkups.",
+      "Introduce new foods slowly over 7-10 days to avoid upset stomachs.",
+      "Microchip your pets — it improves reunion rates dramatically.",
+      "Use positive reinforcement: treats and praise for training.",
+      "Keep your pets active with daily walks and playtime."
+    ];
+
+    /* ====== Render adoption cards ====== */
+    function renderPets(){
+      const grid = document.getElementById('adoption-grid');
+      grid.innerHTML = '';
+      pets.forEach(p=>{
+        const el = document.createElement('div'); el.className='card';
+        el.innerHTML = `<img src="${p.img}" alt="${p.name}"><div class="card-body"><h3>${p.name}</h3><p>${p.bio}</p><div style="margin-top:12px"><button class="btn primary" onclick="adopt('${p.name}')">Adopt</button></div></div>`;
+        grid.appendChild(el);
+      })
+    }
+    function adopt(name){
+      if(confirm('Request adoption for '+name+'?')){
+        // quick local-record fallback
+        const req = JSON.parse(localStorage.getItem('adoptRequests')||'[]'); req.push({pet:name,when:new Date().toISOString()}); localStorage.setItem('adoptRequests',JSON.stringify(req));
+        alert('Adoption request recorded locally. Please fill the contact form to finalize.');
+        document.querySelector('#contact form, #name').scrollIntoView({behavior:'smooth'});
+      }
+    }
+    renderPets();
+
+    /* ====== Care tips simple auto-rotate ====== */
+    let tipIndex = 0;
+    function showTip(i){
+      tipIndex = (i + careTips.length) % careTips.length;
+      document.getElementById('tip-text').textContent = careTips[tipIndex];
+    }
+    showTip(0);
+    setInterval(()=>showTip(tipIndex+1),4000);
+
+    /* ====== Particles (hearts & paws) ====== */
+    const canvas = document.getElementById('particles'); const ctx = canvas.getContext('2d');
+    function resize(){canvas.width = window.innerWidth; canvas.height = window.innerHeight}
+    window.addEventListener('resize',resize); resize();
+    const parts = [];
+    function spawn(x,y,emoji){parts.push({x,y,vx:(Math.random()*.8)-.4,vy:-Math.random()*2-1,life:100,emoji,sz:12+Math.random()*12})}
+    setInterval(()=>{ // random gentle floats
+      if(Math.random()<.3) spawn(Math.random()*window.innerWidth, window.innerHeight*(0.2+Math.random()*0.7), ['🐾','❤️','🐶'][Math.floor(Math.random()*3)]);
+    },2000);
+    function loop(){ctx.clearRect(0,0,canvas.width,canvas.height); for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.x+=p.vx;p.y+=p.vy;p.life--; ctx.font = p.sz+'px serif'; ctx.fillText(p.emoji,p.x,p.y); if(p.life<=0) parts.splice(i,1)} requestAnimationFrame(loop)}
+    loop();
+
+    /* ====== PawBot (hidden chatbot with Web Speech API) ====== */
+    const bottle = document.getElementById('bottle'), pawbot = document.getElementById('pawbot'), messages = document.getElementById('messages'), botInput = document.getElementById('botInput'), botSend = document.getElementById('botSend'), closeBot = document.getElementById('closeBot');
+
+    function pushMessage(sender, text){
+      const div = document.createElement('div'); div.className='msg '+(sender==='You'?'me':'bot'); const bubble = document.createElement('div'); bubble.className='bubble'; bubble.innerHTML = `<strong>${sender}</strong><div style="margin-top:6px">${escapeHtml(text)}</div>`; div.appendChild(bubble); messages.appendChild(div); messages.scrollTop = messages.scrollHeight;
+    }
+    function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+
+    // rule-based replies
+    function generateReply(q){
+      const t=q.toLowerCase();
+      if(t.includes('food')||t.includes('eat')) return 'Most adult dogs do well on two meals a day of a balanced commercial food. Tell me the pet type and age for specifics.';
+      if(t.includes('vaccin')||t.includes('shots')) return 'Core vaccines include rabies, distemper, and parvo. Visit a vet for exact schedule.';
+      if(t.includes('adopt')) return 'Click adopt on a pet card, then submit the contact form so our volunteers can follow up.';
+      if(t.includes('stray')||t.includes('help')) return 'Offer water and a safe box, then contact local shelters. We can guide you step-by-step.';
+      if(t.includes('hi')||t.includes('hello')) return 'Hi! I\'m PawBot — tell me how I can help your furry friend.';
+      const fallback = ['Great question — can you share the pet\'s age or the main issue?','I\'m here to help! For medical concerns, a vet is best — want nearby clinics?'];
+      return fallback[Math.floor(Math.random()*fallback.length)];
+    }
+
+    function speak(text){
+      if(!('speechSynthesis' in window)) return;
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang='en-US'; u.rate=0.95; u.pitch=1.05; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
+    }
+
+    bottle.addEventListener('mouseenter', ()=>{ spawn(window.innerWidth-120, window.innerHeight-140,'🐾'); spawn(window.innerWidth-120, window.innerHeight-140,'❤️'); })
+    bottle.addEventListener('click', ()=>{ pawbot.style.display='flex'; pushMessage('PawBot', "Woof! I'm PawBot, your pet care buddy! Ask me anything about feeding, shelter, or adoption."); speak("Woof! I'm PawBot, your pet care buddy!"); })
+
+    botSend.addEventListener('click', ()=>{ handleBot(); })
+    botInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') handleBot(); })
+    closeBot.addEventListener('click', ()=>{ pawbot.style.display='none'; })
+
+    function handleBot(){
+      const text = botInput.value.trim(); if(!text) return; pushMessage('You',text); botInput.value=''; const reply = generateReply(text); setTimeout(()=>{ pushMessage('PawBot',reply); speak(reply); }, 500);
+    }
+
+    /* ====== Optional small accessibility hint: make bottle slightly pulsing to hint discoverability ====== */
+    (function hintPulse(){
+      let up=true; setInterval(()=>{ bottle.style.transform = up? 'translateY(-6px) rotate(-6deg)' : 'translateY(0px) rotate(0deg)'; up=!up; }, 3500);
+    })();
+      
+      // Replace static renderPets() usage with dynamic fetch
+fetch('https://sagar13.my-style.in/api/get_pets.php')
+  .then(r=>r.json())
+  .then(data=>{
+    const grid = document.getElementById('adoption-grid');
+    grid.innerHTML = '';
+    data.forEach(p=>{
+      const el = document.createElement('div'); el.className='card';
+      el.innerHTML = `<img src="${p.photo || 'https://via.placeholder.com/400x220'}" alt="${p.name}">
+        <div class="card-body"><h3>${p.name}</h3><p>${p.bio}</p>
+        <div style="margin-top:12px"><button class="btn" onclick="requestAdopt('${p.name}')">Adopt</button></div></div>`;
+      grid.appendChild(el);
+    })
+  }).catch(err=>{ console.error(err) });
+
+
+    /* ====== Small helper: escape HTML for form preview (if needed) ====== */
+
+    /* Nothing else required. Contact form will POST to api/submit.php which should show your styled success page (submit.php). */
+  </script>
+</body>
+</html>
