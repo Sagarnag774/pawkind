@@ -7,59 +7,69 @@
   <meta name="description" content="PawKind — kindness to animals, pet adoption, and stray welfare." />
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* Minimal styles for demo — keep or replace with your own style.css */
-    :root{--bg:#f7efe6;--mint:#c4f0e1;--warm:#ffb07c;--card:#fff;--muted:#6b6b6b}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#222}
-    header{padding:20px 6%;display:flex;align-items:center}
-    .brand{font-weight:800;font-size:22px;color:#ff8f6b}
-    .hero{padding:24px 6%}
-    h1,h2{margin:0 0 12px}
-    .container{padding:30px 6%}
-    /* contact card */
-    .contact-card{max-width:640px;margin:24px auto;background:var(--card);padding:28px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.06)}
-    label{display:block;margin:12px 0 6px;font-weight:600}
-    input,select,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #eee}
-    .btn{background:linear-gradient(90deg,var(--warm),#ff8f6b);color:#fff;border:none;padding:12px 18px;border-radius:40px;font-weight:700;cursor:pointer;margin-top:14px}
-    /* pet grid */
-    .pet-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px;margin-top:20px}
-    .pet-card{background:#fff;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.05);overflow:hidden;padding-bottom:14px}
-    .pet-card img{width:100%;height:190px;object-fit:cover}
+    /* Inline minimal styles — replace with your style.css if you prefer */
+    :root { --bg:#f7efe6; --mint:#c4f0e1; --warm:#ffb07c; --card:#fff; --muted:#6b6b6b }
+    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:#222}
+    header{display:flex;align-items:center;justify-content:space-between;padding:20px 6%}
+    .logo{display:flex;align-items:center;gap:10px}
+    .logo .brand{font-weight:800;color:#ff8f6b}
+    nav{display:flex;gap:18px;align-items:center}
+    a.btn-admin{background:transparent;border:2px solid rgba(0,0,0,0.06);padding:8px 12px;border-radius:8px;text-decoration:none;color:#333}
+    .hero{padding:26px 6%}
+    h1{font-size:36px;margin:4px 0}
+    p.lead{color:var(--muted);max-width:800px}
+    main{padding:30px 6%}
+    .pet-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
+    .pet-card{background:var(--card);border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.06);overflow:hidden}
+    .pet-card img{width:100%;height:170px;object-fit:cover}
     .pet-card .body{padding:14px}
-    /* bottle */
-    .bottle{position:fixed;right:20px;bottom:20px;width:64px;height:64px;border-radius:12px;background:#dff7ee;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,0.18);z-index:999}
+    .btn{background:linear-gradient(90deg,var(--warm),#ff8f6b);color:#fff;border:none;padding:10px 14px;border-radius:999px;cursor:pointer}
+    .contact-card{max-width:700px;margin:20px auto;background:var(--card);padding:24px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.04)}
+    label{display:block;margin:10px 0 6px;font-weight:600}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #eee}
+    .bottle{position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:12px;background:#dff7ee;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,0.18);z-index:999}
+    @media(max-width:600px){h1{font-size:24px}}
   </style>
 
-  <!-- Supabase client (CDN) -->
+  <!-- supabase client CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- your supabaseClient.js (module) -->
+  <!-- load supabaseClient (your file) -->
   <script type="module" src="supabaseClient.js"></script>
 </head>
 <body>
   <header>
-    <div class="brand">🐾 PawKind</div>
+    <div class="logo">
+      <div style="font-size:22px" class="brand">🐾 PawKind</div>
+      <div style="font-size:13px;color:var(--muted)">Adopt • Love • Care</div>
+    </div>
+    <nav>
+      <a href="#adoption">Adoption</a>
+      <a href="#contact">Contact</a>
+      <a class="btn-admin" id="adminLoginBtn" href="/admin/login.html">Admin Login</a>
+    </nav>
   </header>
 
   <section class="hero">
     <h1>Adopt, Love, and Care</h1>
-    <p style="color:var(--muted)">Find adoptable pets, join local volunteering, and support shelters.</p>
+    <p class="lead">Find adoptable pets, join local volunteering, and support shelters. Be kind — adopt responsibly.</p>
   </section>
 
-  <main class="container">
+  <main>
     <section id="adoption">
       <h2>Adoption Center</h2>
-      <div id="petList" class="pet-container">
-        <!-- pets will be loaded here -->
+      <div id="petList" class="pet-container" aria-live="polite">
+        <!-- pets will be injected here -->
       </div>
     </section>
 
-    <section id="care" style="margin-top:40px">
+    <section id="care" style="margin-top:36px">
       <h2>Care Tips</h2>
-      <div style="background:#fff;padding:20px;border-radius:12px;margin-top:12px">
-        <p style="margin:0">Always introduce new foods slowly, provide fresh water, and keep up with vaccinations.</p>
+      <div style="background:#fff;padding:18px;border-radius:12px;margin-top:12px">
+        <p style="margin:0;color:var(--muted)">Always introduce new foods slowly, provide fresh water, microchip your pets, and schedule regular vet visits.</p>
       </div>
     </section>
 
-    <section id="contact" style="margin-top:40px">
+    <section id="contact" style="margin-top:36px">
       <h2>Contact / Join Us</h2>
       <div class="contact-card">
         <form id="contactForm" class="contact-form">
@@ -74,9 +84,7 @@
 
           <label for="interest">I'm interested in</label>
           <select id="interest" name="interest">
-            <option>Adoption</option>
-            <option>Volunteering</option>
-            <option>Donation</option>
+            <option>Adoption</option><option>Volunteering</option><option>Donation</option>
           </select>
 
           <label for="message">Message</label>
@@ -88,23 +96,22 @@
     </section>
   </main>
 
-  <!-- Floating bottle trigger (PawBot) -->
   <div class="bottle" id="bottle" title="Discover PawBot">🐶</div>
 
   <script type="module">
     import { supabase } from './supabaseClient.js';
 
-    /* ---------- Contact form handler (saves to Supabase) ---------- */
+    // CONTACT FORM -> insert into "contacts"
     const contactForm = document.getElementById('contactForm');
     contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const phone = document.getElementById('phone').value;
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
       const interest = document.getElementById('interest').value;
-      const message = document.getElementById('message').value;
+      const message = document.getElementById('message').value.trim();
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('contacts')
         .insert([{ name, email, phone, interest, message }]);
 
@@ -117,39 +124,39 @@
       contactForm.reset();
     });
 
-    /* ---------- Load pets from Supabase ---------- */
+    // LOAD PETS
     async function loadPets() {
       const { data, error } = await supabase
         .from('pets')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching pets:', error);
-        document.getElementById('petList').innerHTML = '<p style="color:#a00">Unable to load pets.</p>';
-        return;
-      }
-
       const petList = document.getElementById('petList');
       petList.innerHTML = '';
+
+      if (error) {
+        console.error('Error loading pets:', error);
+        petList.innerHTML = '<p style="color:#a00">Unable to load pets.</p>';
+        return;
+      }
       if (!data || data.length === 0) {
-        petList.innerHTML = '<p>No pets yet. Add some in Supabase Table Editor.</p>';
+        petList.innerHTML = '<p>No pets yet — add some from the admin dashboard.</p>';
         return;
       }
 
       data.forEach(pet => {
-        const card = document.createElement('div');
-        card.className = 'pet-card';
-        card.innerHTML = `
-          <img src="${pet.image_url || 'https://via.placeholder.com/400x300?text=No+Image'}" alt="${pet.name}">
+        const el = document.createElement('div');
+        el.className = 'pet-card';
+        el.innerHTML = `
+          <img src="${pet.photo || 'https://via.placeholder.com/400x300?text=No+Image'}" alt="${escapeHtml(pet.name)}">
           <div class="body">
             <h3>${escapeHtml(pet.name)}</h3>
-            <p style="color:var(--muted)">${escapeHtml(pet.description || '')}</p>
-            <p><strong>Breed:</strong> ${escapeHtml(pet.breed || '—')} • <strong>Age:</strong> ${escapeHtml(pet.age || '—')}</p>
-            <button class="btn" onclick="requestAdopt('${escapeAttr(pet.name)}')">Adopt Me</button>
+            <p style="color:var(--muted)"><strong>Breed:</strong> ${escapeHtml(pet.breed || '—')} • <strong>Age:</strong> ${escapeHtml(pet.age || '—')}</p>
+            <p style="color:var(--muted);margin-top:8px">${escapeHtml(pet.bio || '')}</p>
+            <div style="margin-top:12px"><button class="btn" onclick="requestAdopt('${escapeAttr(pet.name)}')">Adopt Me</button></div>
           </div>
         `;
-        petList.appendChild(card);
+        petList.appendChild(el);
       });
     }
 
@@ -164,38 +171,31 @@
 
     loadPets();
 
-    /* ---------- Simple PawBot (hidden chatbot + TTS) ---------- */
+    // PawBot (hidden interactive bottle)
     const bottle = document.getElementById('bottle');
-    bottle.addEventListener('click', () => openPawBot());
-
-    function openPawBot(){
-      // small friendly greeting
-      speak("Woof! I'm PawBot, your pet care buddy. Ask me about feeding, vaccines, or adoption.");
-      // small visual cue — open a simple prompt for the demo
-      const q = prompt("PawBot — ask a question about pet care:");
-      if(!q) return;
+    bottle.addEventListener('click', async () => {
+      speak("Woof! I'm PawBot — your pet care buddy. Ask me something!");
+      const q = prompt('PawBot — ask a question about pet care:');
+      if (!q) return;
       const reply = generateReply(q);
-      alert("PawBot: " + reply);
+      alert('PawBot: ' + reply);
       speak(reply);
-    }
+    });
 
     function generateReply(input){
       const q = (input||'').toLowerCase();
-      if(q.includes('food')||q.includes('eat')) return 'A balanced diet and fresh water are essential. Ask your vet for brand and portion advice.';
-      if(q.includes('vaccin')) return 'Core vaccines: rabies, distemper, parvovirus. Visit a vet for a proper schedule.';
-      if(q.includes('adopt')) return 'Click Adopt on a card and fill the contact form — our team will contact you.';
-      if(q.includes('stray')||q.includes('help')) return 'Offer water and a safe carrier, then contact local shelters.';
-      return "I’m here to help — tell me your pet's age or main issue and I'll try to help.";
+      if(q.includes('food')||q.includes('eat')) return 'Feed balanced food, fresh water daily. Portion depends on age and size.';
+      if(q.includes('vaccin')) return 'Core vaccines include rabies, distemper, parvo. Check with a local vet.';
+      if(q.includes('adopt')) return 'Click Adopt and fill the contact form — our team will contact you.';
+      return "I'm here to help! Tell me your pet's age or the main issue.";
     }
 
     function speak(text){
       if(!('speechSynthesis' in window)) return;
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'en-US'; u.rate = 0.95; u.pitch = 1.05;
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(u);
+      window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
     }
-
   </script>
 </body>
 </html>
