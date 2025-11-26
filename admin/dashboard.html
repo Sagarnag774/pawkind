@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin Dashboard — PawKind</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="../supabaseClient.js"></script>
+  <style>
+    body{font-family:Inter,system-ui,Arial;margin:0;background:#f4f4f6}
+    header{background:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    main{padding:18px}
+    .card{background:#fff;padding:16px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.04)}
+    label{display:block;margin-top:10px}
+    input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #eee}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .pet-row{display:flex;align-items:center;gap:12px;padding:10px;border-bottom:1px solid #eee}
+    .pet-row img{width:84px;height:64px;object-fit:cover;border-radius:8px}
+    .actions button{margin-left:6px}
+  </style>
+</head>
+<body>
+  <header>
+    <div><strong>PawKind Admin</strong></div>
+    <div>
+      <span id="adminUser" style="margin-right:12px;color:#666"></span>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section>
+        <div class="card">
+          <h3>Pets</h3>
+          <div id="petsList" style="margin-top:12px"></div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3>Add / Edit Pet</h3>
+          <form id="petForm">
+            <input type="hidden" id="petId">
+            <label for="name">Name</label>
+            <input id="name" />
+
+            <label for="age">Age</label>
+            <input id="age" />
+
+            <label for="breed">Breed</label>
+            <input id="breed" />
+
+            <label for="bio">Bio</label>
+            <textarea id="bio" rows="4"></textarea>
+
+            <label for="photo">Photo URL</label>
+            <input id="photo" />
+
+            <div style="margin-top:10px">
+              <button type="submit">Save Pet</button>
+              <button type="button" id="clearBtn">Clear</button>
+            </div>
+          </form>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script type="module">
+    import { supabase } from '../supabaseClient.js';
+
+    // Protect page
+    const admin = JSON.parse(localStorage.getItem('pawkind_admin') || 'null');
+    if (!admin) {
+      window.location.href = '/admin/login.html';
+    } else {
+      document.getElementById('adminUser').textContent = admin.username;
+    }
+
+    const petsList = document.getElementById('petsList');
+    const petForm = document.getElementById('petForm');
+
+    async function loadPets() {
+      const { data, error } = await supabase.from('pets').select('*').order('created_at', { ascending: false });
+      petsList.innerHTML = '';
+      if (error) return console.error(error);
+      data.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'pet-row';
+        div.innerHTML = `
+          <img src="${p.photo || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${escapeHtml(p.name)}">
+          <div style="flex:1">
+            <strong>${escapeHtml(p.name)}</strong><div style="color:#666;font-size:13px">${escapeHtml(p.breed||'—')} • ${escapeHtml(p.age||'—')}</div>
+          </div>
+          <div class="actions">
+            <button data-id="${p.id}" data-act="edit">Edit</button>
+            <button data-id="${p.id}" data-act="delete">Delete</button>
+          </div>
+        `;
+        petsList.appendChild(div);
+      });
+    }
+
+    petsList.addEventListener('click', async (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const id = btn.dataset.id;
+      const act = btn.dataset.act;
+      if (act === 'edit') {
+        const { data } = await supabase.from('pets').select('*').eq('id', id).single();
+        document.getElementById('petId').value = data.id;
+        document.getElementById('name').value = data.name || '';
+        document.getElementById('age').value = data.age || '';
+        document.getElementById('breed').value = data.breed || '';
+        document.getElementById('bio').value = data.bio || '';
+        document.getElementById('photo').value = data.photo || '';
+      } else if (act === 'delete') {
+        if (!confirm('Delete this pet?')) return;
+        const { error } = await supabase.from('pets').delete().eq('id', id);
+        if (error) return alert('Delete failed.');
+        loadPets();
+      }
+    });
+
+    petForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('petId').value;
+      const name = document.getElementById('name').value.trim();
+      const age = document.getElementById('age').value.trim();
+      const breed = document.getElementById('breed').value.trim();
+      const bio = document.getElementById('bio').value.trim();
+      const photo = document.getElementById('photo').value.trim();
+
+      if (!name) return alert('Name required.');
+
+      if (id) {
+        const { error } = await supabase.from('pets').update({ name, age, breed, bio, photo }).eq('id', id);
+        if (error) return alert('Update failed.');
+      } else {
+        const { error } = await supabase.from('pets').insert([{ name, age, breed, bio, photo }]);
+        if (error) return alert('Insert failed.');
+      }
+
+      petForm.reset();
+      document.getElementById('petId').value = '';
+      loadPets();
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      petForm.reset(); document.getElementById('petId').value = '';
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('pawkind_admin');
+      window.location.href = '/admin/login.html';
+    });
+
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // initial load
+    loadPets();
+  </script>
+</body>
+</html>
