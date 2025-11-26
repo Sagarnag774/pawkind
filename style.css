@@ -1,0 +1,6 @@
+/* style.css — optional. Keep or change. */
+body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:#f7efe6;color:#222}
+h1{font-size:36px}
+h2{font-size:28px;color:#333}
+.pet-container{margin-top:18px}
+.pet-card h3{margin:0 0 6px}

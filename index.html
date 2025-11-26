@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PawKind — Adopt, Love, and Care</title>
+  <meta name="description" content="PawKind — kindness to animals, pet adoption, and stray welfare." />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Minimal styles for demo — keep or replace with your own style.css */
+    :root{--bg:#f7efe6;--mint:#c4f0e1;--warm:#ffb07c;--card:#fff;--muted:#6b6b6b}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#222}
+    header{padding:20px 6%;display:flex;align-items:center}
+    .brand{font-weight:800;font-size:22px;color:#ff8f6b}
+    .hero{padding:24px 6%}
+    h1,h2{margin:0 0 12px}
+    .container{padding:30px 6%}
+    /* contact card */
+    .contact-card{max-width:640px;margin:24px auto;background:var(--card);padding:28px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.06)}
+    label{display:block;margin:12px 0 6px;font-weight:600}
+    input,select,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #eee}
+    .btn{background:linear-gradient(90deg,var(--warm),#ff8f6b);color:#fff;border:none;padding:12px 18px;border-radius:40px;font-weight:700;cursor:pointer;margin-top:14px}
+    /* pet grid */
+    .pet-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px;margin-top:20px}
+    .pet-card{background:#fff;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.05);overflow:hidden;padding-bottom:14px}
+    .pet-card img{width:100%;height:190px;object-fit:cover}
+    .pet-card .body{padding:14px}
+    /* bottle */
+    .bottle{position:fixed;right:20px;bottom:20px;width:64px;height:64px;border-radius:12px;background:#dff7ee;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 28px rgba(0,0,0,0.18);z-index:999}
+  </style>
+
+  <!-- Supabase client (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- your supabaseClient.js (module) -->
+  <script type="module" src="supabaseClient.js"></script>
+</head>
+<body>
+  <header>
+    <div class="brand">🐾 PawKind</div>
+  </header>
+
+  <section class="hero">
+    <h1>Adopt, Love, and Care</h1>
+    <p style="color:var(--muted)">Find adoptable pets, join local volunteering, and support shelters.</p>
+  </section>
+
+  <main class="container">
+    <section id="adoption">
+      <h2>Adoption Center</h2>
+      <div id="petList" class="pet-container">
+        <!-- pets will be loaded here -->
+      </div>
+    </section>
+
+    <section id="care" style="margin-top:40px">
+      <h2>Care Tips</h2>
+      <div style="background:#fff;padding:20px;border-radius:12px;margin-top:12px">
+        <p style="margin:0">Always introduce new foods slowly, provide fresh water, and keep up with vaccinations.</p>
+      </div>
+    </section>
+
+    <section id="contact" style="margin-top:40px">
+      <h2>Contact / Join Us</h2>
+      <div class="contact-card">
+        <form id="contactForm" class="contact-form">
+          <label for="name">Full Name</label>
+          <input id="name" name="name" required>
+
+          <label for="email">Email Address</label>
+          <input id="email" name="email" type="email" required>
+
+          <label for="phone">Phone</label>
+          <input id="phone" name="phone" type="tel">
+
+          <label for="interest">I'm interested in</label>
+          <select id="interest" name="interest">
+            <option>Adoption</option>
+            <option>Volunteering</option>
+            <option>Donation</option>
+          </select>
+
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="4" placeholder="Tell us how you'd like to help..."></textarea>
+
+          <button class="btn" type="submit">Send Message</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- Floating bottle trigger (PawBot) -->
+  <div class="bottle" id="bottle" title="Discover PawBot">🐶</div>
+
+  <script type="module">
+    import { supabase } from './supabaseClient.js';
+
+    /* ---------- Contact form handler (saves to Supabase) ---------- */
+    const contactForm = document.getElementById('contactForm');
+    contactForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+      const interest = document.getElementById('interest').value;
+      const message = document.getElementById('message').value;
+
+      const { data, error } = await supabase
+        .from('contacts')
+        .insert([{ name, email, phone, interest, message }]);
+
+      if (error) {
+        console.error(error);
+        alert('Submission failed — check console.');
+        return;
+      }
+      alert('Thanks! Your message was submitted.');
+      contactForm.reset();
+    });
+
+    /* ---------- Load pets from Supabase ---------- */
+    async function loadPets() {
+      const { data, error } = await supabase
+        .from('pets')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching pets:', error);
+        document.getElementById('petList').innerHTML = '<p style="color:#a00">Unable to load pets.</p>';
+        return;
+      }
+
+      const petList = document.getElementById('petList');
+      petList.innerHTML = '';
+      if (!data || data.length === 0) {
+        petList.innerHTML = '<p>No pets yet. Add some in Supabase Table Editor.</p>';
+        return;
+      }
+
+      data.forEach(pet => {
+        const card = document.createElement('div');
+        card.className = 'pet-card';
+        card.innerHTML = `
+          <img src="${pet.image_url || 'https://via.placeholder.com/400x300?text=No+Image'}" alt="${pet.name}">
+          <div class="body">
+            <h3>${escapeHtml(pet.name)}</h3>
+            <p style="color:var(--muted)">${escapeHtml(pet.description || '')}</p>
+            <p><strong>Breed:</strong> ${escapeHtml(pet.breed || '—')} • <strong>Age:</strong> ${escapeHtml(pet.age || '—')}</p>
+            <button class="btn" onclick="requestAdopt('${escapeAttr(pet.name)}')">Adopt Me</button>
+          </div>
+        `;
+        petList.appendChild(card);
+      });
+    }
+
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function escapeAttr(s){ return (s||'').replace(/'/g,"\\'").replace(/"/g,'\\"'); }
+
+    window.requestAdopt = function(name){
+      if (confirm(`Request adoption for ${name}?`)){
+        alert('Thanks! The adoption request will be processed by the team.');
+      }
+    }
+
+    loadPets();
+
+    /* ---------- Simple PawBot (hidden chatbot + TTS) ---------- */
+    const bottle = document.getElementById('bottle');
+    bottle.addEventListener('click', () => openPawBot());
+
+    function openPawBot(){
+      // small friendly greeting
+      speak("Woof! I'm PawBot, your pet care buddy. Ask me about feeding, vaccines, or adoption.");
+      // small visual cue — open a simple prompt for the demo
+      const q = prompt("PawBot — ask a question about pet care:");
+      if(!q) return;
+      const reply = generateReply(q);
+      alert("PawBot: " + reply);
+      speak(reply);
+    }
+
+    function generateReply(input){
+      const q = (input||'').toLowerCase();
+      if(q.includes('food')||q.includes('eat')) return 'A balanced diet and fresh water are essential. Ask your vet for brand and portion advice.';
+      if(q.includes('vaccin')) return 'Core vaccines: rabies, distemper, parvovirus. Visit a vet for a proper schedule.';
+      if(q.includes('adopt')) return 'Click Adopt on a card and fill the contact form — our team will contact you.';
+      if(q.includes('stray')||q.includes('help')) return 'Offer water and a safe carrier, then contact local shelters.';
+      return "I’m here to help — tell me your pet's age or main issue and I'll try to help.";
+    }
+
+    function speak(text){
+      if(!('speechSynthesis' in window)) return;
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-US'; u.rate = 0.95; u.pitch = 1.05;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
+    }
+
+  </script>
+</body>
+</html>
